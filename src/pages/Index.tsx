@@ -20,6 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { exportClientsToExcel } from "@/lib/exportExcel";
 
 const Index = () => {
   const { clients, isLoading, error, addClient, updateClient, deleteClient, getClient } = useClients();
@@ -116,6 +117,16 @@ const Index = () => {
     setIsEditing(true);
   };
 
+  const handleExport = () => {
+    if (clients.length > 0) {
+      exportClientsToExcel(clients);
+      toast({
+        title: "Export réussi",
+        description: `${clients.length} client(s) exporté(s) vers Excel.`,
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -145,11 +156,15 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header onAddClient={() => setIsFormOpen(true)} />
+      <Header 
+        onAddClient={() => setIsFormOpen(true)} 
+        onExport={handleExport}
+        canExport={clients.length > 0}
+      />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {clients.length > 0 ? (
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-8">
             <SearchBar
               value={searchQuery}
               onChange={setSearchQuery}
@@ -161,7 +176,7 @@ const Index = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6"
               >
                 {filteredClients.map((client, index) => (
                   <ClientCard
@@ -176,9 +191,9 @@ const Index = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="py-20 text-center"
+                className="py-12 sm:py-20 text-center"
               >
-                <p className="text-muted-foreground">
+                <p className="text-sm sm:text-base text-muted-foreground">
                   Aucun client trouvé pour "{searchQuery}"
                 </p>
               </motion.div>
